@@ -1,8 +1,8 @@
-\# Project Requirements
+# Project Requirements
 
 
 
-\## Functional Requirements
+## Functional Requirements
 
 
 
@@ -15,7 +15,7 @@
 
 
 
-\## Infrastructure Requirements
+## Infrastructure Requirements
 
 
 
@@ -30,7 +30,7 @@
 
 
 
-\## Security Requirements
+## Security Requirements
 
 
 
@@ -44,7 +44,7 @@
 
 
 
-\## Availability and Scaling Requirements
+## Availability and Scaling Requirements
 
 
 
@@ -57,7 +57,7 @@
 
 
 
-\## Monitoring Requirements
+## Monitoring Requirements
 
 
 
@@ -71,7 +71,7 @@
 
 
 
-\## Deployment Requirements
+## Deployment Requirements
 
 
 
@@ -85,7 +85,7 @@
 
 
 
-\## Cost Requirements
+## Cost Requirements
 
 
 
@@ -98,7 +98,7 @@
 
 
 
-\## Success Criteria
+## Success Criteria
 
 
 
@@ -114,4 +114,5 @@
 * Logs, metrics and alerts are visible in CloudWatch
 * A failed deployment can be rolled back successfully
 * The full environment can be safely destroyed without leaving unnecessary resources
+
 
