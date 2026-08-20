@@ -1,8 +1,8 @@
-\# AWS EKS Platform Project
+# AWS EKS Platform Project
 
 
 
-\## Project Goal
+## Project Goal
 
 
 
@@ -10,7 +10,7 @@ I am going to build and operate a production-style container platform on AWS usi
 
 
 
-\## What I Will Build
+## What I Will Build
 
 
 
@@ -46,7 +46,7 @@ AWS Application Load Balancer
 
 
 
-\## Technologies
+## Technologies
 
 
 
@@ -72,7 +72,7 @@ CloudWatch
 
 
 
-\## Skills I Want to Demonstrate
+## Skills I Want to Demonstrate
 
 
 
@@ -95,4 +95,5 @@ Network all parts of the project to ensure proper communications
 Auto-scale to ensure system stability and scaling
 
 Troubleshoot failures using logs, metrics and Kubernetes and AWS diagnostics tools
+
 
