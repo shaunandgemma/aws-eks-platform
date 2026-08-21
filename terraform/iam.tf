@@ -76,8 +76,3 @@ resource "aws_iam_role_policy_attachment" "vpc_cni_policy" {
   role       = aws_iam_role.vpc_cni.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
 }
-
-resource "aws_iam_role_policy_attachment" "eks_node_cni_bootstrap_policy" {
-  role       = aws_iam_role.eks_nodes.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
-}
