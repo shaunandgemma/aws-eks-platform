@@ -112,3 +112,7 @@ variable "kubernetes_version" {
   default     = "1.36"
 }
 
+variable "eks_public_access_cidrs" {
+  type        = list(string)
+  description = "CIDR blocks allowed to access the public EKS Kubernetes API endpoint"
+}
