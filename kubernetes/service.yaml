@@ -1,0 +1,17 @@
+# Provide a stable network endpoint for the application Pods
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: aws-eks-platform-service
+  namespace: aws-eks-platform
+
+spec:
+  selector:
+    app: aws-eks-platform-app
+
+  ports:
+    - port: 80
+      targetPort: 8000
+
+  type: ClusterIP

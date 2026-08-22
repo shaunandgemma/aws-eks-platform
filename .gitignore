@@ -29,3 +29,6 @@ Thumbs.db
 
 # Logs
 *.log
+
+# kubernetes
+kubernetes/secret.yaml

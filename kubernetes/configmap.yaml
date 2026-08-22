@@ -1,0 +1,10 @@
+# Store non-sensitive application configuration
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: aws-eks-platform-config
+  namespace: aws-eks-platform
+
+data:
+  APP_ENV: "kubernetes"

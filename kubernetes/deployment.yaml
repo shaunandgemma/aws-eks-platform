@@ -1,0 +1,54 @@
+# Run the FastAPI application as Kubernetes Pods
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: aws-eks-platform-app
+  namespace: aws-eks-platform
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: aws-eks-platform-app
+
+  template:
+    metadata:
+      labels:
+        app: aws-eks-platform-app
+    spec:
+      containers:
+        - name: aws-eks-platform-app
+          image: REPLACE_WITH_ECR_IMAGE
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: aws-eks-platform-config
+            - secretRef:
+                name: aws-eks-platform-secret
+            
+          # Define the resource each Pod requests and the maximum it can use
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+          # Check whether the application is alive
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+
+          # Check whether the application is ready to receive traffic
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 5
