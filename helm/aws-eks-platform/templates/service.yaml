@@ -1,0 +1,16 @@
+# Create a stable Kubernetes Service for the application Pods
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: aws-eks-platform-service
+
+spec:
+  type: {{ .Values.service.type }}
+
+  selector:
+    app: aws-eks-platform-app
+
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}

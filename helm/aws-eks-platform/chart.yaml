@@ -1,0 +1,7 @@
+# Basic information about the Helm chart
+apiVersion: v2
+name: aws-eks-platform
+description: A Helm chart for deploying an AWS EKS platform FastAPI application
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

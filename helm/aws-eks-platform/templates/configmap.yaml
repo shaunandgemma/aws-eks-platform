@@ -1,0 +1,9 @@
+# Create application configuration from Helm values
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: aws-eks-platform-config
+
+data:
+  APP_ENV: {{ .Values.config.appEnv | quote }}

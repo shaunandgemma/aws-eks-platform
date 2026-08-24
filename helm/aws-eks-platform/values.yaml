@@ -1,0 +1,46 @@
+# Container image settings used by the Deployment template
+image:
+  repository: REPLACE_WITH_YOUR_REPOSITORY
+  tag: "1.0.0"
+  pullPolicy: IfNotPresent
+
+# Number of application Pods Helm should request
+replicaCount: 2
+
+# Non-sensitive application configuration
+config:
+  appEnv: "kubernetes"
+
+# Kubernetes Service settings
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8000
+
+# Ingress and AWS Application Load Balancer settings
+ingress:
+  enabled: true
+  className: alb
+  scheme: internet-facing
+  targetType: ip
+  healthCheckPath: /health
+
+# CPU and memory settings for each application Pod
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    cpu: "500m"
+    memory: "256Mi"
+
+# Horizontal Pod Autoscaler settings
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 60
+
+# Existing Kubernetes Secrest used byt the appication
+secret:
+  name: aws-eks-platform-secret

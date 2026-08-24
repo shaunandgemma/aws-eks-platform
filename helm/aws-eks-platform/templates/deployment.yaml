@@ -1,0 +1,60 @@
+# Deploy the FastAPI application Pods using Helm values
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: aws-eks-platform-app
+
+spec:
+  replicas: {{ .Values.replicaCount }}
+
+  selector:
+    matchLabels:
+      app: aws-eks-platform-app
+
+  template:
+    metadata:
+      labels:
+        app: aws-eks-platform-app
+
+    spec:
+      containers:
+        - name: aws-eks-platform-app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+
+          # Expose the application port inside the Pod
+          ports:
+            - containerPort: {{ .Values.service.targetPort }}
+
+          # Load non-sensitive application settings from the ConfigMap
+          envFrom:
+            - configMapRef:
+                name: aws-eks-platform-config
+            - secretRef:
+                name: {{ .Values.secret.name }}
+
+          # Define CPU and memory requests and limits for each Pod
+          resources:
+            requests:
+              cpu: {{ .Values.resources.requests.cpu | quote }}
+              memory: {{ .Values.resources.requests.memory | quote }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu | quote }}
+              memory: {{ .Values.resources.limits.memory | quote }}
+
+          # Restart the container if the application stops responding
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.service.targetPort }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+
+          # Only send traffic to the Pod when the application is ready
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.service.targetPort }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
