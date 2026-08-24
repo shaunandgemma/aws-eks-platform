@@ -76,3 +76,108 @@ resource "aws_iam_role_policy_attachment" "vpc_cni_policy" {
   role       = aws_iam_role.vpc_cni.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
 }
+
+# Allow the AWS Load Balancer Controller to assume this role through Pod Identity
+resource "aws_iam_role" "load_balancer_controller" {
+  name = "${local.name_prefix}-load-balancer-controller-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "pods.eks.amazonaws.com"
+        }
+        Action = [
+          "sts:AssumeRole",
+          "sts:TagSession"
+        ]
+      }
+    ]
+  })
+
+  tags = local.common_tags
+}
+
+# Create the IAM policy used by the AWS Load Balancer Controller
+resource "aws_iam_policy" "load_balancer_controller" {
+  name        = "${local.name_prefix}-load-balancer-controller-policy"
+  description = "Permissions required by the AWS Load Balancer Controller"
+
+  # Read the official AWS Load Balancer Controller policy JSON from the local file
+  policy = file("${path.module}/policies/aws-load-balancer-controller-policy.json")
+
+  tags = local.common_tags
+}
+
+# Attach the controller permissions policy to its Pod Identity IAM role
+resource "aws_iam_role_policy_attachment" "load_balancer_controller" {
+  role       = aws_iam_role.load_balancer_controller.name
+  policy_arn = aws_iam_policy.load_balancer_controller.arn
+}
+
+# Allow Cluster Autoscaler to assume this role through EKS Pod Identity
+resource "aws_iam_role" "cluster_autoscaler" {
+  name = "${local.name_prefix}-cluster-autoscaler-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "pods.eks.amazonaws.com"
+        }
+        Action = [
+          "sts:AssumeRole",
+          "sts:TagSession"
+        ]
+      }
+    ]
+  })
+
+  tags = local.common_tags
+}
+
+# Allow Cluster Autoscaler to inspect node groups and scale only this cluster's ASG
+resource "aws_iam_role_policy" "cluster_autoscaler" {
+  name = "${local.name_prefix}-cluster-autoscaler-policy"
+  role = aws_iam_role.cluster_autoscaler.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "autoscaling:SetDesiredCapacity",
+          "autoscaling:TerminateInstanceInAutoScalingGroup"
+        ]
+        Resource = "*"
+        Condition = {
+          StringEquals = {
+            "aws:ResourceTag/k8s.io/cluster-autoscaler/enabled"                  = "true"
+            "aws:ResourceTag/k8s.io/cluster-autoscaler/aws-eks-platform-cluster" = "owned"
+          }
+        }
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "autoscaling:DescribeAutoScalingGroups",
+          "autoscaling:DescribeAutoScalingInstances",
+          "autoscaling:DescribeLaunchConfigurations",
+          "autoscaling:DescribeScalingActivities",
+          "autoscaling:DescribeTags",
+          "ec2:DescribeImages",
+          "ec2:DescribeInstanceTypes",
+          "ec2:DescribeLaunchTemplateVersions",
+          "ec2:GetInstanceTypesFromInstanceRequirements",
+          "eks:DescribeNodegroup"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
