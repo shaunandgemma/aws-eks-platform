@@ -68,7 +68,10 @@ resource "aws_eks_addon" "cloudwatch_observability" {
     aws_eks_addon.pod_identity_agent,
     aws_eks_pod_identity_association.cloudwatch_agent,
     aws_iam_role_policy_attachment.cloudwatch_agent,
-    aws_iam_role_policy_attachment.cloudwatch_xray
+    aws_iam_role_policy_attachment.cloudwatch_xray,
+    aws_cloudwatch_log_group.application,
+    aws_cloudwatch_log_group.dataplane,
+    aws_cloudwatch_log_group.host
   ]
 
   tags = local.common_tags
