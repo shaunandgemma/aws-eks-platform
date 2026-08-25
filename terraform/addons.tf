@@ -44,6 +44,17 @@ resource "aws_eks_addon" "cloudwatch_observability" {
   # Keep the first stage focused on Container Insights rather than
   # automatically instrumenting every application for Application Signals
   configuration_values = jsonencode({
+
+    # Use the newer recommended OpenTelemetry Container Insights
+    containerInsights = {
+      enabled = false
+    }
+
+    otelContainerInsights = {
+      enabled = true
+    }
+
+
     manager = {
       applicationSignals = {
         autoMonitor = {
@@ -56,7 +67,8 @@ resource "aws_eks_addon" "cloudwatch_observability" {
   depends_on = [
     aws_eks_addon.pod_identity_agent,
     aws_eks_pod_identity_association.cloudwatch_agent,
-    aws_iam_role_policy_attachment.cloudwatch_agent
+    aws_iam_role_policy_attachment.cloudwatch_agent,
+    aws_iam_role_policy_attachment.cloudwatch_xray
   ]
 
   tags = local.common_tags
