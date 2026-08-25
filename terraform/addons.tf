@@ -27,3 +27,37 @@ resource "aws_eks_pod_identity_association" "cluster_autoscaler" {
   service_account = "cluster-autoscaler"
   role_arn        = aws_iam_role.cluster_autoscaler.arn
 }
+
+# Give CloudWatch Agent Pods their dedicated IAM role through Pod Identity
+resource "aws_eks_pod_identity_association" "cloudwatch_agent" {
+  cluster_name    = aws_eks_cluster.main.name
+  namespace       = "amazon-cloudwatch"
+  service_account = "cloudwatch-agent"
+  role_arn        = aws_iam_role.cloudwatch_agent.arn
+}
+
+# Install CloudWatch Observability for EKS
+resource "aws_eks_addon" "cloudwatch_observability" {
+  cluster_name = aws_eks_cluster.main.name
+  addon_name   = "amazon-cloudwatch-observability"
+
+  # Keep the first stage focused on Container Insights rather than
+  # automatically instrumenting every application for Application Signals
+  configuration_values = jsonencode({
+    manager = {
+      applicationSignals = {
+        autoMonitor = {
+          monitorAllServices = false
+        }
+      }
+    }
+  })
+
+  depends_on = [
+    aws_eks_addon.pod_identity_agent,
+    aws_eks_pod_identity_association.cloudwatch_agent,
+    aws_iam_role_policy_attachment.cloudwatch_agent
+  ]
+
+  tags = local.common_tags
+}

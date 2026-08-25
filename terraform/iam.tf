@@ -181,3 +181,32 @@ resource "aws_iam_role_policy" "cluster_autoscaler" {
     ]
   })
 }
+
+# Allow the CloudWatch Agent to assume this role through EKS
+resource "aws_iam_role" "cloudwatch_agent" {
+  name = "${local.name_prefix}-cloudwatch-agent-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "pods.eks.amazonaws.com"
+        }
+        Action = [
+          "sts:AssumeRole",
+          "sts:TagSession"
+        ]
+      }
+    ]
+  })
+
+  tags = local.common_tags
+}
+
+# Give the CloudWatch Agent permission to send metrics and logs to CloudWatch
+resource "aws_iam_role_policy_attachment" "cloudwatch_agent" {
+  role       = aws_iam_role.cloudwatch_agent.name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+}
