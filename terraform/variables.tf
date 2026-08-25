@@ -116,3 +116,8 @@ variable "eks_public_access_cidrs" {
   type        = list(string)
   description = "CIDR blocks allowed to access the public EKS Kubernetes API endpoint"
 }
+
+variable "alert_email" {
+  description = "Email address that receives CloudWatch alarm notifications"
+  type        = string
+}
