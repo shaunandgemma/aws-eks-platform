@@ -34,11 +34,11 @@ resource "aws_cloudwatch_log_group" "eks_control_plane" {
 resource "aws_cloudwatch_log_metric_filter" "application_errors" {
   name           = "${local.name_prefix}-application-errors"
   log_group_name = aws_cloudwatch_log_group.application.name
-  pattern        = "ERROR"
+  pattern        = "{ $.kubernetes.namespace_name = \"aws-eks-platform\" && $.kubernetes.container_name = \"aws-eks-platform-app\" && $.log = \"*ERROR*\" }"
 
   metric_transformation {
     name      = "ApplicationErrors"
-    namespace = "AWS/EKSPlatform"
+    namespace = "EKSPlatform"
     value     = "1"
   }
 }
@@ -47,7 +47,7 @@ resource "aws_cloudwatch_log_metric_filter" "application_errors" {
 resource "aws_cloudwatch_metric_alarm" "application_errors" {
   alarm_name          = "${local.name_prefix}-application-errors"
   alarm_description   = "Application errors detected in the EKS workload logs"
-  namespace           = "AWS/EKSPlatform"
+  namespace           = "EKSPlatform"
   metric_name         = "ApplicationErrors"
   statistic           = "Sum"
   period              = 300
@@ -92,7 +92,7 @@ resource "aws_cloudwatch_dashboard" "eks_platform" {
 
           metrics = [
             [
-              "AWS/EKSPlatform",
+              "EKSPlatform",
               "ApplicationErrors"
             ]
           ]

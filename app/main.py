@@ -1,14 +1,14 @@
-#Import the FastAPI framework
+# Import the FastAPI framework
 from fastapi import FastAPI
 # Import os so the app can read environment variables
 import os
-
 
 # Read APP_ENV from outside the app; use "local" if nothing is supplied
 APP_ENV = os.getenv("APP_ENV", "local")
 
 # Create the FastAPI web application object
 app = FastAPI()  # This is the main application that Uvicorn will run and that our API routes attach to
+
 
 # Return a simple response from the application root
 #@app.get("/") tells FastAPI to run read_root() whenever someone sends an HTTP GET request to /

@@ -1,7 +1,7 @@
 # Container image settings used by the Deployment template
 image:
   repository: 406760143388.dkr.ecr.eu-west-2.amazonaws.com/aws-eks-platform-app
-  tag: "1.0.0"
+  tag: "1.0.2"
   pullPolicy: IfNotPresent
 
 # Number of application Pods Helm should request
