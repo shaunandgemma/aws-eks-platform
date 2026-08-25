@@ -76,3 +76,42 @@ resource "aws_sns_topic_subscription" "alerts_email" {
   protocol  = "email"
   endpoint  = var.alert_email
 }
+
+# Create a CloudWatch dashboard for the EKS platform
+resource "aws_cloudwatch_dashboard" "eks_platform" {
+  dashboard_name = "${local.name_prefix}-dashboard"
+
+  dashboard_body = jsonencode({
+    widgets = [
+      {
+        type = "metric"
+
+        properties = {
+          title  = "Application Errors"
+          region = var.aws_region
+
+          metrics = [
+            [
+              "AWS/EKSPlatform",
+              "ApplicationErrors"
+            ]
+          ]
+
+          period = 300
+          stat   = "Sum"
+          view   = "timeSeries"
+        }
+      },
+      {
+        type = "log"
+
+        properties = {
+          title  = "Recent Application Logs"
+          region = var.aws_region
+
+          query = "SOURCE '${aws_cloudwatch_log_group.application.name}' | fields @timestamp, @message | sort @timestamp desc | limit 50"
+        }
+      }
+    ]
+  })
+}
